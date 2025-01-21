@@ -2,6 +2,8 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from parqueo.models import RegistroParqueo
 
+# configuracion de tipo vehiculos y espacios totales
+
 
 class TipoVehiculo(models.Model):
     nombre = models.CharField(

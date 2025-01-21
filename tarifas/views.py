@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import Tarifa
+from .serializers import TarifaSerializers
 
-# Create your views here.
+
+class TarifaViewSet(viewsets.ModelViewSet):
+    queryset = Tarifa.objects.all()
+    serializer_class = TarifaSerializers

@@ -11,3 +11,4 @@ class RegistroParqueoAdmin(admin.ModelAdmin):
     list_per_page = 20
     # No editable desde el admin
     readonly_fields = ('fecha_entrada', 'total_cobro')
+    # raw_id_fields = ('vehiculo',)  # Convierte el campo de búsqueda en un buscador más práctico

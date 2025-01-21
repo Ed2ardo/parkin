@@ -7,7 +7,7 @@ from core.models import TipoVehiculo
 
 class Tarifa(models.Model):
     tipo_vehiculo = models.ForeignKey(
-        TipoVehiculo, on_delete=models.CASCADE, related_name="tarifas", verbose_name="Tipo de Vehículo"
+        'core.TipoVehiculo', on_delete=models.CASCADE, related_name="tarifas", verbose_name="Tipo de Vehículo"
     )
     costo_por_minuto = models.DecimalField(
         max_digits=6,
