@@ -35,11 +35,6 @@ class RegistroParqueo(models.Model):
         if not self.fecha_entrada:
             return Decimal(0)
 
-        # if not self.fecha_salida:
-        #     fecha_final = now()
-        # else:
-        #     fecha_final = self.fecha_salida
-
         fecha_final = self.fecha_salida or now()
 
         # Calcular duración en minutos
