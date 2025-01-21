@@ -9,3 +9,4 @@ class RegistroParqueoSerializers(serializers.ModelSerializer):
         model = RegistroParqueo
         fields = ['id', 'vehiculo', 'usuario_registra_nombre',
                   'fecha_entrada', 'fecha_salida', 'total_cobro', 'estado']
+        read_only_fields = ('total_cobro',)

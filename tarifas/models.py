@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from core.models import TipoVehiculo
 
 # tarifas/models.py
 

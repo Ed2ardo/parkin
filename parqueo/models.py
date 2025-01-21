@@ -1,6 +1,8 @@
 from django.db import models
 from decimal import Decimal
+from django.utils.timezone import now
 from django.contrib.auth.models import User
+from tarifas.models import Tarifa
 
 
 # Gestiona los registros de entrada y salida de los vehículos.
@@ -28,11 +30,44 @@ class RegistroParqueo(models.Model):
         verbose_name="Estado del Registro"
     )
 
+    def calcular_total_cobro(self):
+        """Calcula el total a cobrar por minuto, en función del tiempo y la tarifa"""
+        if not self.fecha_entrada:
+            return Decimal(0)
+
+        # if not self.fecha_salida:
+        #     fecha_final = now()
+        # else:
+        #     fecha_final = self.fecha_salida
+
+        fecha_final = self.fecha_salida or now()
+
+        # Calcular duración en minutos
+        duracion = (fecha_final - self.fecha_entrada).total_seconds()/60
+
+        # obtener la tarifa asociada al tipo de vehículo
+        tarifa = Tarifa.objects.filter(
+            tipo_vehiculo=self.vehiculo.tipo).first()
+
+        if tarifa:
+            return round(tarifa.costo_por_minuto * Decimal(duracion), 2)
+        return Decimal(0)  # Si no hay tarifa definida, devuelve 0
+
     def save(self, *args, **kwargs):
+        # Calcula el total_cobro automáticamente antes de guardar
+        if self.fecha_salida:  # Calcula si hay fecha de salida
+            self.total_cobro = self.calcular_total_cobro()
+
+        # Actualizar el estado a "facturado" automáticamente si se calculó el cobro
+            if self.total_cobro and self.estado != "facturado":
+                self.estado = "facturado"
+
         if not self.usuario_registra:
             self.usuario_registra = User.objects.filter(
                 is_superuser=True).first()
-            super().save(*args, **kwargs)
+
+        # guardar en la bbdd los cambios
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Registro {self.vehiculo.placa} - Entrada: {self.fecha_entrada}"
