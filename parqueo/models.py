@@ -3,14 +3,29 @@ from decimal import Decimal
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from tarifas.models import Tarifa
+from django.core.validators import RegexValidator
 
 
 # Gestiona los registros de entrada y salida de los vehículos.
 
 
 class RegistroParqueo(models.Model):
-    vehiculo = models.ForeignKey(
-        'vehiculos.Vehiculo', on_delete=models.CASCADE, related_name="registros_parqueo", verbose_name="Vehículo Asociado"
+    # vehiculo = models.ForeignKey(
+    #     'vehiculos.Vehiculo', on_delete=models.CASCADE, related_name="registros_parqueo", verbose_name="Vehículo Asociado"
+    # )
+    placa = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        validators=[RegexValidator(
+            regex='^[A-Z0-9-]{6,10}$',
+            message='Formato de placa inválido (solo mayúsculas, números y guiones).'
+        )],
+        verbose_name="Placa del Vehículo"
+    )
+
+    tipo = models.ForeignKey(
+        'core.TipoVehiculo', on_delete=models.CASCADE, verbose_name="Tipo de Vehículo"
     )
     usuario_registra = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuario que Registró"
@@ -30,6 +45,12 @@ class RegistroParqueo(models.Model):
         verbose_name="Estado del Registro"
     )
 
+    # cliente = models.ForeignKey(
+    #     'clientes.Cliente', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Cliente Asociado"
+    # )
+    cliente = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name="Cliente Asociado")
+
     def calcular_total_cobro(self):
         """Calcula el total a cobrar por minuto, en función del tiempo y la tarifa"""
         if not self.fecha_entrada:
@@ -42,7 +63,11 @@ class RegistroParqueo(models.Model):
 
         # obtener la tarifa asociada al tipo de vehículo
         tarifa = Tarifa.objects.filter(
-            tipo_vehiculo=self.vehiculo.tipo).first()
+            tipo_vehiculo=self.tipo).first()
+
+        if not tarifa:
+            raise ValueError(
+                f"No hay tarifa definida para el tipo de vehículo: {self.tipo}")
 
         if tarifa:
             return round(tarifa.costo_por_minuto * Decimal(duracion), 2)
@@ -65,8 +90,12 @@ class RegistroParqueo(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Registro {self.vehiculo.placa} - Entrada: {self.fecha_entrada}"
+        return f"Registro {self.placa} - Entrada: {self.fecha_entrada}"
 
     class Meta:
         verbose_name = "Registro de Parqueo"
         verbose_name_plural = "Registros de Parqueo"
+        indexes = [
+            models.Index(fields=["placa"]),
+            models.Index(fields=["fecha_entrada"]),
+        ]

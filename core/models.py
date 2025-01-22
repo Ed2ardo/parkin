@@ -30,7 +30,7 @@ class EspacioParqueoConfig(models.Model):
     def espacios_ocupados(self):
         # Calcula los espacios ocupados a partir de registros activos
         return RegistroParqueo.objects.filter(
-            vehiculo__tipo=self.tipo_espacio,
+            tipo=self.tipo_espacio,
             estado="activo"
         ).count()
 
