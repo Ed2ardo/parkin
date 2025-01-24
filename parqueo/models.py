@@ -15,8 +15,8 @@ class RegistroParqueo(models.Model):
     # )
     placa = models.CharField(
         max_length=10,
-        null=True,
-        blank=True,
+        # null=True,
+        # blank=True,
         validators=[RegexValidator(
             regex='^[A-Z0-9-]{6,10}$',
             message='Formato de placa inválido (solo mayúsculas, números y guiones).'
@@ -74,13 +74,12 @@ class RegistroParqueo(models.Model):
         return Decimal(0)  # Si no hay tarifa definida, devuelve 0
 
     def save(self, *args, **kwargs):
-        # Calcula el total_cobro automáticamente antes de guardar
-        if self.fecha_salida:  # Calcula si hay fecha de salida
+        """Calcula el total_cobro automáticamente antes de guardar.
+        Si el estado es "facturado" y no tiene fecha de salida, la registra:
+        """
+        if self.estado == "facturado" and not self.fecha_salida:
+            self.fecha_salida = now()
             self.total_cobro = self.calcular_total_cobro()
-
-        # Actualizar el estado a "facturado" automáticamente si se calculó el cobro
-            if self.total_cobro and self.estado != "facturado":
-                self.estado = "facturado"
 
         if not self.usuario_registra:
             self.usuario_registra = User.objects.filter(
