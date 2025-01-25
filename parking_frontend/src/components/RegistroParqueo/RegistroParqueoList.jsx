@@ -20,8 +20,8 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
             <th>Placa</th>
             <th>Tipo</th>
             <th>Fecha Entrada</th>
-            <th>Cliente</th>
             <th>Salida</th>
+            <th>Cliente</th>
           </tr>
         </thead>
         <tbody>
@@ -33,6 +33,7 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               </td>
               <td>{registro.tipo_nombre}</td>
               <td>{formatearFecha(registro.fecha_entrada)}</td>
+              <td>{formatearFecha(registro.fecha_salida)}</td>
               <td>{registro.cliente}</td>
               <td>
                 {/* Botón de cobrar */}

@@ -55,7 +55,7 @@ function RegistroParqueoDetallePage() {
           <p>Tipo: {registro.tipo_nombre}</p>
           <p>Cliente: {registro.cliente}</p>
           <p>Fecha de Entrada: {formatearFecha(registro.fecha_entrada)}</p>
-          {/* <p>Fecha Salida: {!registro.fecha_salida }</p> */}
+          <p>Fecha Salida: {formatearFecha(registro.fecha_salida)}</p>
           <p>Estado: {registro.estado}</p>
           <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} />
           <button onClick={handleEliminar}>Eliminar</button>
