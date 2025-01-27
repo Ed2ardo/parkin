@@ -7,7 +7,7 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
   if (loading) return <p>Cargando registros...</p>;
 
   const formatearFecha = (fecha) =>
-    fecha ? format(new Date(fecha), "dd/MM/yy, hh:mm a") : "Pendiente";
+    fecha ? format(new Date(fecha), "dd/MM/yyyy, hh:mm a") : "Pendiente";
 
   return (
     <div>
@@ -34,7 +34,6 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               </td>
               <td>{registro.tipo_nombre}</td>
               <td>{formatearFecha(registro.fecha_entrada)}</td>
-              <td>{registro.cliente}</td>
               <td>{formatearFecha(registro.fecha_salida)}</td>
               <td>{registro.cliente}</td>
               <td>{registro.estado}</td>

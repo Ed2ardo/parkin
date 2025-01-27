@@ -37,8 +37,14 @@ function ConfiguracionGeneralPage() {
 
   const handleGuardarTarifas = async () => {
     try {
-      await axiosInstance.put("tarifas/", tarifas);
-      console.log(tarifas)
+      // Iterar sobre cada tarifa y actualizarla
+      await Promise.all(
+        tarifas.map((tarifa) =>
+          axiosInstance.put(`tarifas/${tarifa.id}/`, {
+            costo_por_minuto: tarifa.costo_por_minuto,
+          })
+        )
+      );
       toast.success("Tarifas actualizadas con éxito");
     } catch (error) {
       console.error("Error al guardar tarifas:", error);
@@ -48,8 +54,14 @@ function ConfiguracionGeneralPage() {
 
   const handleGuardarEspacios = async () => {
     try {
-      await axiosInstance.put("core/espacios-parqueo/", espacios);
-      console.log(espacios)
+      await Promise.all(
+        espacios.map((espacio) =>
+          axiosInstance.put(`core/espacios-parqueo/${espacio.id}/`, {
+            tipo_espacio: espacio.tipo_espacio,
+            total_espacios: espacio.total_espacios,
+          })
+        )
+      );
       toast.success("Espacios actualizados con éxito");
     } catch (error) {
       console.error("Error al guardar espacios:", error);
