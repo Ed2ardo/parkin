@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import CobrarButton from "../components/RegistroParqueo/CobrarButton";
+import EliminarButton from "../components/EliminarButton";
 import { format } from "date-fns";
 
 function RegistroParqueoDetallePage() {
@@ -21,19 +22,6 @@ function RegistroParqueoDetallePage() {
       navigate("/"); // Redirigir al listado si hay un error
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleEliminar = async () => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este registro?")) return;
-
-    try {
-      await axiosInstance.delete(`parqueo/registro-parqueo/${id}/`);
-      alert("Registro eliminado.");
-      navigate("/parqueo"); // Redirigir al listado
-    } catch (error) {
-      console.error("Error al eliminar:", error);
-      alert("No se pudo eliminar el registro.");
     }
   };
 
@@ -58,7 +46,7 @@ function RegistroParqueoDetallePage() {
           <p>Fecha Salida: {formatearFecha(registro.fecha_salida)}</p>
           <p>Estado: {registro.estado}</p>
           <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} />
-          <button onClick={handleEliminar}>Eliminar</button>
+          <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
         </div>
       )}
     </div>

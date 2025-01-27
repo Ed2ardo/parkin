@@ -39,7 +39,7 @@ class RegistroParqueo(models.Model):
     )
     estado = models.CharField(
         max_length=20,
-        choices=[("activo", "Activo"), ("baja", "Baja"),
+        choices=[("activo", "Activo"), ("baja", "Eliminado"),
                  ("facturado", "Facturado")],
         default="activo",
         verbose_name="Estado del Registro"
