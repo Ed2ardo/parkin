@@ -9,8 +9,6 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
   const formatearFecha = (fecha) =>
     fecha ? format(new Date(fecha), "dd/MM/yy, hh:mm a") : "Pendiente";
 
-  const registrosActivos = registros.filter((registro) => !registro.fecha_salida) // Listar solo los registros activos
-
   return (
     <div>
       <h2>Registros de Parqueo</h2>
@@ -20,12 +18,15 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
             <th>Placa</th>
             <th>Tipo</th>
             <th>Fecha Entrada</th>
-            <th>Salida</th>
+            <th>Fecha Salida</th>
             <th>Cliente</th>
+            <th>Estado</th>
+            <th>Facturado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {registrosActivos.map((registro) => (
+          {registros.map((registro) => (
             <tr key={registro.id}>
               <td>
                 {/* Enlace a la página de detalles */}
@@ -35,14 +36,17 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               <td>{formatearFecha(registro.fecha_entrada)}</td>
               <td>{formatearFecha(registro.fecha_salida)}</td>
               <td>{registro.cliente}</td>
+              <td>{registro.estado}</td>
+              <td>${registro.total_cobro}</td>
               <td>
                 {/* Botón de cobrar */}
-                {registro.estado !== "facturado" && (
+                {registro.estado === "activo" && (
                   <CobrarButton
                     registroId={registro.id}
                     onCobrado={fetchRegistros} // Refresca la lista después de cobrar
                   />
-                )}</td>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

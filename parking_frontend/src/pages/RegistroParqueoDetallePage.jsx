@@ -45,7 +45,13 @@ function RegistroParqueoDetallePage() {
           <p>Fecha de Entrada: {formatearFecha(registro.fecha_entrada)}</p>
           <p>Fecha Salida: {formatearFecha(registro.fecha_salida)}</p>
           <p>Estado: {registro.estado}</p>
-          <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} />
+          {registro.estado === "activo" && (
+            <CobrarButton
+              registroId={registro.id}
+              onCobrado={fetchRegistros} // Refresca la lista después de cobrar
+            />
+          )}
+          {/* <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} /> */}
           <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
         </div>
       )}
