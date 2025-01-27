@@ -3,6 +3,7 @@ import RegistroParqueoPage from "./pages/RegistroParqueoPage";
 import RegistroParqueoDetallePage from "./pages/RegistroParqueoDetallePage";
 import TicketPage from "./pages/TicketPage";
 import Navbar from "./components/Navbar";
+import ConfiguracionGeneralPage from "./pages/ConfiguraciónGeneralPage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<RegistroParqueoPage />} />
         <Route path="/registro/:id" element={<RegistroParqueoDetallePage />} />
         <Route path="/ticket/:id" element={<TicketPage />} />
+        <Route path="/config" element={<ConfiguracionGeneralPage />} />
       </Routes>
     </Router>
   );

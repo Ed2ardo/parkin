@@ -11,12 +11,12 @@ function Navbar() {
             Inicio
           </Link>
         </li>
-        {/* <li>
-          <Link to="/historico" style={styles.link}>
-            Histórico
+        <li>
+          <Link to="/config" style={styles.link}>
+            Configuración
           </Link>
-        </li> */}
-        {/* Puedes agregar más enlaces aquí */}
+        </li>
+        {/* agregar más enlaces aquí */}
       </ul>
     </nav>
   );

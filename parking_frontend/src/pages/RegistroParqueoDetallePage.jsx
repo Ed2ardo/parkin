@@ -48,7 +48,7 @@ function RegistroParqueoDetallePage() {
           {registro.estado === "activo" && (
             <CobrarButton
               registroId={registro.id}
-              onCobrado={fetchRegistros} // Refresca la lista después de cobrar
+              onCobrado={registros} // Refresca la lista después de cobrar
             />
           )}
           {/* <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} /> */}
