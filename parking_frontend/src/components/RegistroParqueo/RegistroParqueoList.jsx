@@ -18,8 +18,11 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
             <th>Placa</th>
             <th>Tipo</th>
             <th>Fecha Entrada</th>
+            <th>Fecha Salida</th>
             <th>Cliente</th>
-            <th>Salida</th>
+            <th>Estado</th>
+            <th>Facturado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -33,14 +36,18 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               <td>{formatearFecha(registro.fecha_entrada)}</td>
               <td>{registro.cliente}</td>
               <td>{formatearFecha(registro.fecha_salida)}</td>
-
-              {/* Botón de cobrar */}
-              {registro.estado !== "facturado" && (
-                <CobrarButton
-                  registroId={registro.id}
-                  onCobrado={fetchRegistros} // Refresca la lista después de cobrar
-                />
-              )}
+              <td>{registro.cliente}</td>
+              <td>{registro.estado}</td>
+              <td>${registro.total_cobro}</td>
+              <td>
+                {/* Botón de cobrar */}
+                {registro.estado === "activo" && (
+                  <CobrarButton
+                    registroId={registro.id}
+                    onCobrado={fetchRegistros} // Refresca la lista después de cobrar
+                  />
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
