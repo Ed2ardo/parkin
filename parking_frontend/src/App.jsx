@@ -14,6 +14,7 @@ function App() {
         <Route path="/registro/:id" element={<RegistroParqueoDetallePage />} />
         <Route path="/ticket/:id" element={<TicketPage />} />
         <Route path="/config" element={<ConfiguracionGeneralPage />} />
+        {/* <Route path="/tickets" element={<TicketPage />} /> */}
       </Routes>
     </Router>
   );

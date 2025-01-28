@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import CobrarButton from "../components/RegistroParqueo/CobrarButton";
+import CobrarButton from "../components/CobrarButton";
 import EliminarButton from "../components/EliminarButton";
 import { format } from "date-fns";
+import CrearTicketButton from "../components/CrearTicketButton";
 
 function RegistroParqueoDetallePage() {
   const { id } = useParams(); // Obtiene el ID del registro desde la URL
@@ -53,6 +54,9 @@ function RegistroParqueoDetallePage() {
           )}
           {/* <CobrarButton registroId={registro.id} onCobrado={fetchRegistro} /> */}
           <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
+          {registro.estado === "facturado" && (
+            <CrearTicketButton registroId={registro.id} />
+          )}
         </div>
       )}
     </div>

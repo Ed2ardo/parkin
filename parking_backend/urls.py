@@ -6,4 +6,5 @@ urlpatterns = [
     path('api/core/', include('core.urls')),
     path('api/parqueo/', include('parqueo.urls')),
     path('api/tarifas/', include('tarifas.urls')),
+    path('api/tickets/', include('tickets.urls')),
 ]
