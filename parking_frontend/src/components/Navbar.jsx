@@ -15,7 +15,7 @@ function Navbar() {
           <Link to="/config" style={styles.link}>
             Configuración
           </Link>
-          <Link to="/tickets" className="hover:text-blue-300">
+          <Link to="/tickets">
             Tickets
           </Link>
         </li>

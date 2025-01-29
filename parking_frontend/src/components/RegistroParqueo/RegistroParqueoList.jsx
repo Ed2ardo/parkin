@@ -1,13 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import CobrarButton from "../CobrarButton";
+import GenerarTicketButton from "../GenerarTicketButton";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 function RegistroParqueoList({ registros, loading, fetchRegistros }) {
-  if (loading) return <p>Cargando registros...</p>;
+  const [tickets, setTickets] = useState({}); // Debe ser un objeto, no un array
+
+  useEffect(() => {
+    const verificarTickets = async () => {
+      try {
+        const response = await axiosInstance.get("/tickets/");
+        const ticketMap = response.data.reduce((acc, ticket) => {
+          acc[ticket.registro_parqueo] = ticket.id;
+          return acc;
+        }, {});
+        setTickets(ticketMap);
+      } catch (error) {
+        console.error("Error al obtener tickets:", error);
+      }
+    };
+
+    verificarTickets();
+  }, [registros]); // Se actualiza si cambian los registros
 
   const formatearFecha = (fecha) =>
     fecha ? format(new Date(fecha), "dd/MM/yyyy, hh:mm a") : "Pendiente";
+
+  if (loading) return <p>Cargando registros...</p>;
 
   return (
     <div>
@@ -29,7 +49,6 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
           {registros.map((registro) => (
             <tr key={registro.id}>
               <td>
-                {/* Enlace a la página de detalles */}
                 <Link to={`/registro/${registro.id}`}>{registro.placa}</Link>
               </td>
               <td>{registro.tipo_nombre}</td>
@@ -39,19 +58,27 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               <td>{registro.estado}</td>
               <td>${registro.total_cobro}</td>
               <td>
-                {/* Botón de cobrar */}
-                {registro.estado === "activo" && (
-                  <CobrarButton
-                    registroId={registro.id}
-                    onCobrado={fetchRegistros} // Refresca la lista después de cobrar
-                  />
+                {tickets[registro.id] ? (
+                  <Link
+                    to={`/tickets/${tickets[registro.id]}`}
+                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded"
+                  >
+                    Ver Ticket
+                  </Link>
+                ) : (
+                  registro.estado === "activo" && (
+                    <GenerarTicketButton
+                      registroId={registro.id}
+                      onCobrado={fetchRegistros}
+                    />
+                  )
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div >
+    </div>
   );
 }
 
