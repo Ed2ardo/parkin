@@ -15,9 +15,6 @@ function Navbar() {
           <Link to="/config" style={styles.link}>
             Configuración
           </Link>
-          <Link to="/tickets">
-            Tickets
-          </Link>
         </li>
         {/* agregar más enlaces aquí */}
       </ul>

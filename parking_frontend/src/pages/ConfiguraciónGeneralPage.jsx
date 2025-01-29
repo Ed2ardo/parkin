@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function ConfiguracionGeneralPage() {
   const [empresa, setEmpresa] = useState({
@@ -13,6 +14,7 @@ function ConfiguracionGeneralPage() {
   const [tarifas, setTarifas] = useState([]); // Inicializamos como un arreglo vacío
   const [espacios, setEspacios] = useState([]); // Igual aquí
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchConfiguracion = async () => {
     try {
@@ -149,6 +151,12 @@ function ConfiguracionGeneralPage() {
           </div>
         ))}
         <button onClick={handleGuardarEspacios}>Guardar Espacios</button>
+        <button
+          onClick={() => navigate("/")}
+          className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+        >
+          Regresar al Inicio
+        </button>
       </section>
     </div>
   );

@@ -45,6 +45,7 @@ function RegistroParqueoDetallePage() {
           <p>Fecha de Entrada: {formatearFecha(registro.fecha_entrada)}</p>
           <p>Fecha Salida: {formatearFecha(registro.fecha_salida)}</p>
           <p>Estado: {registro.estado}</p>
+          <p>Total cobrado: ${registro.total_cobro}</p>
           {registro.estado === "activo" && (
             <GenerarTicketButton
               registroId={registro.id}
@@ -52,6 +53,12 @@ function RegistroParqueoDetallePage() {
             />
           )}
           <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
+          <button
+            onClick={() => navigate("/")}
+            className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+          >
+            Regresar al Inicio
+          </button>
         </div>
       )}
     </div>
