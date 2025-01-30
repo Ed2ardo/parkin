@@ -52,6 +52,15 @@ function RegistroParqueoDetallePage() {
               onCobrado={fetchRegistro} // Refresca la lista después de cobrar
             />
           )}
+
+          <button
+            onClick={() => navigate(`/registro/${registro.id}/editar`)}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
+            disabled={registro.estado === "facturado"} // Deshabilitar si ya está facturado
+          >
+            Editar
+          </button>
+
           <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
           <button
             onClick={() => navigate("/")}

@@ -4,6 +4,7 @@ import RegistroParqueoDetallePage from "./pages/RegistroParqueoDetallePage";
 import TicketPage from "./pages/TicketPage";
 import Navbar from "./components/Navbar";
 import ConfiguracionGeneralPage from "./pages/ConfiguraciónGeneralPage";
+import RegistroParqueoEditarPage from "./pages/RegistroParqueoEditarPage";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <Route path="/registro/:id" element={<RegistroParqueoDetallePage />} />
         <Route path="/tickets/:id" element={<TicketPage />} />
         <Route path="/config" element={<ConfiguracionGeneralPage />} />
-        {/* <Route path="/tickets" element={<TicketPage />} /> */}
+        <Route path="/registro/:id/editar" element={<RegistroParqueoEditarPage />} />
       </Routes>
     </Router>
   );

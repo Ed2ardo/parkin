@@ -17,11 +17,15 @@ class RegistroParqueoSerializers(serializers.ModelSerializer):
         read_only_fields = ('total_cobro', 'fecha_entrada', 'fecha_salida')
 
     def validate_placa(self, value):
-        # 1. Consulta en la base de datos si ya existe un registro de parqueo con la misma placa
-        # y que tenga el estado "activo".
-        if RegistroParqueo.objects.filter(placa=value, estado="activo").exists():
-            # 2. Si existe, lanza un error de validación con un mensaje explicativo.
+        instance = self.instance  # Obtiene la instancia si se está editando
+        query = RegistroParqueo.objects.filter(placa=value, estado="activo")
+
+        if instance:
+            # Excluye el registro actual de la validación
+            query = query.exclude(id=instance.id)
+
+        if query.exists():
             raise serializers.ValidationError(
                 "Ya existe un registro activo para esta placa.")
-        # 3. Si no hay conflicto, devuelve el valor de la placa.
+
         return value
