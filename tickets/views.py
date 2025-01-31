@@ -1,13 +1,26 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Ticket
 from .serializers import TicketSerializer
 from parqueo.models import RegistroParqueo
 
 
+class EsAdminPermission(IsAuthenticated):
+    """Permite solo a administradores realizar ciertas acciones."""
+
+    def has_permission(self, request, view):
+        return super().has_permission(request, view) and request.user.is_superuser
+
+
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+
+    def get_permissions(self):
+        if self.action in ['destroy']:  # Solo admin puede cancelar tickets
+            return [EsAdminPermission()]
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
         """
