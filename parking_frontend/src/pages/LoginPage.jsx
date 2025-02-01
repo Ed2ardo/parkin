@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useAuth(); // 🔥 Usar la función `login` desde `AuthContext`
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -17,14 +17,9 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await axiosInstance.post("token/", credentials);
-      localStorage.setItem("token", response.data.access);
-      localStorage.setItem("refreshToken", response.data.refresh);
-      axiosInstance.defaults.headers["Authorization"] = `Bearer ${response.data.access}`;
-      console.log("Respuesta del servidor:", response.data); // Ver si llega el token
-      console.log("Redirigiendo...");
-      navigate("/");
-    } catch (error) {
+      await login(credentials); // 🔥 Llamar a la función login del contexto
+      navigate("/"); // Redirigir después de iniciar sesión
+    } catch {
       setError("Credenciales incorrectas. Intenta de nuevo.");
     }
   };

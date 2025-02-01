@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions
 from .models import TipoVehiculo, EspacioParqueoConfig
 from .serializers import TipoVehiculoSerializer, EspacioParqueoConfigSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -27,3 +29,14 @@ class EspacioParqueoConfigViewSet(viewsets.ModelViewSet):
     queryset = EspacioParqueoConfig.objects.all()
     serializer_class = EspacioParqueoConfigSerializer
     permission_classes = [IsAdminOrReadOnly]
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def get_current_user(request):
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "is_admin": user.is_superuser
+    })

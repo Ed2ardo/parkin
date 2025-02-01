@@ -1,7 +1,5 @@
-// Para manejar la sesión del usuario en toda la aplicación.
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
-import { useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -9,26 +7,34 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
-  // Verifica si hay una sesión al cargar la app
+  // console.log("Usuario autenticado:", user);
+
+  // 🔥 Consultar el usuario autenticado si hay un token
   useEffect(() => {
     if (token) {
       axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
-      setUser({ username: "Usuario Autenticado" });
+      axiosInstance.get("core/me/")
+        .then((res) => setUser(res.data))
+        .catch(() => logout());
     }
-  }, [token]);
+  }, [token]); // ✅ Se ejecuta cada vez que el token cambia
 
   const login = async (credentials) => {
     try {
       const response = await axiosInstance.post("token/", credentials);
-      const { access } = response.data;
+      const { access, refresh } = response.data;
 
       // Guardar en estado y localStorage
       setToken(access);
       localStorage.setItem("token", access);
-
-      setUser({ username: credentials.username });
+      localStorage.setItem("refreshToken", refresh);
 
       axiosInstance.defaults.headers["Authorization"] = `Bearer ${access}`;
+
+      // 🔥 Consultar información del usuario tras autenticarse
+      const userResponse = await axiosInstance.get("core/me/");
+      setUser(userResponse.data);
+
     } catch (error) {
       console.error("Error en login:", error);
       throw error;
@@ -42,7 +48,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("refreshToken");
     axiosInstance.defaults.headers["Authorization"] = "";
   };
-
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>
