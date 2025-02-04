@@ -4,11 +4,6 @@ from parqueo.models import RegistroParqueo
 
 
 class Ticket(models.Model):
-    registro_parqueo = models.OneToOneField(
-        RegistroParqueo,
-        on_delete=models.CASCADE,
-        verbose_name="Registro de Parqueo Asociado"
-    )
     numero_ticket = models.CharField(
         max_length=10,
         unique=True,
@@ -51,19 +46,20 @@ class Ticket(models.Model):
         - El total desde el registro asociado si no se especifica.
         """
         if not self.numero_ticket:
-            # Generar un número de ticket único y secuencial
             ultimo_ticket = Ticket.objects.aggregate(
                 models.Max('id')).get('id__max') or 0
-            # Formato 00001, 00002, etc.
             self.numero_ticket = f"{ultimo_ticket + 1:05d}"
 
-        if not self.total and self.registro_parqueo:
-            self.total = self.registro_parqueo.total_cobro
+        if not self.total:
+            # Acceder al registro asociado
+            registro = RegistroParqueo.objects.filter(ticket=self).first()
+            if registro:
+                self.total = registro.total_cobro
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Ticket #{self.numero_ticket} - Registro: {self.registro_parqueo.placa}"
+        return f"Ticket #{self.numero_ticket}"
 
     class Meta:
         verbose_name = "Ticket"

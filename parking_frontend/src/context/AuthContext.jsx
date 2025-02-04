@@ -11,13 +11,13 @@ export const AuthProvider = ({ children }) => {
 
   // 🔥 Consultar el usuario autenticado si hay un token
   useEffect(() => {
-    if (token) {
+    if (token && !user) {
       axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
       axiosInstance.get("core/me/")
         .then((res) => setUser(res.data))
         .catch(() => logout());
     }
-  }, [token]); // ✅ Se ejecuta cada vez que el token cambia
+  }, [token, user]); // Se ejecuta solo si el token cambia o el usuario no está definido
 
   const login = async (credentials) => {
     try {

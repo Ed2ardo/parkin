@@ -10,9 +10,7 @@ from django.core.validators import RegexValidator
 
 
 class RegistroParqueo(models.Model):
-    # vehiculo = models.ForeignKey(
-    #     'vehiculos.Vehiculo', on_delete=models.CASCADE, related_name="registros_parqueo", verbose_name="Vehículo Asociado"
-    # )
+
     placa = models.CharField(
         max_length=10,
         # null=True,
@@ -22,6 +20,14 @@ class RegistroParqueo(models.Model):
             message='Formato de placa inválido (solo mayúsculas, números y guiones).'
         )],
         verbose_name="Placa del Vehículo"
+    )
+
+    ticket = models.OneToOneField(
+        'tickets.Ticket',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Ticket Asociado"
     )
 
     tipo = models.ForeignKey(

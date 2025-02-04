@@ -1,52 +1,34 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-function Navbar() {
+const Navbar = () => {
+  const { user, logout } = useAuth();
+
   return (
-    <nav style={styles.navbar}>
-      <h1 style={styles.title}>Gestión de Parqueadero</h1>
-      <ul style={styles.navList}>
-        <li>
-          <Link to="/" style={styles.link}>
-            Inicio
-          </Link>
-        </li>
-        <li>
-          <Link to="/config" style={styles.link}>
-            Configuración
-          </Link>
-        </li>
-        {/* agregar más enlaces aquí */}
-      </ul>
+    <nav className="p-4 bg-gray-800 text-white flex justify-between">
+
+
+      {/* Sección de usuario */}
+      <div>
+        {/* Si hay usuario autenticado, mostrar su nombre y el botón de cerrar sesión */}
+        {user ? (
+          <>
+            <span className="mr-4">Bienvenido, {user.username}</span>
+            <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">Salir</button>
+            <div>
+              <Link to="/" className="mr-4">Inicio</Link>
+
+              {/* Mostrar la opción de Configuración solo si el usuario es administrador */}
+              {user?.is_admin && <Link to="/config" className="mr-4">Configuración</Link>}
+            </div>
+          </>
+        ) : (
+          /* Si no hay usuario autenticado, mostrar el enlace para iniciar sesión */
+          <Link to="/login">Iniciar sesión</Link>
+        )}
+      </div>
     </nav>
   );
-}
-
-const styles = {
-  navbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px 20px",
-    backgroundColor: "#0044cc",
-    color: "#fff",
-  },
-  title: {
-    fontSize: "1.5rem",
-    margin: 0,
-  },
-  navList: {
-    display: "flex",
-    listStyle: "none",
-    gap: "15px",
-    margin: 0,
-    padding: 0,
-  },
-  link: {
-    color: "#fff",
-    textDecoration: "none",
-    fontWeight: "bold",
-  },
 };
 
 export default Navbar;

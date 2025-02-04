@@ -1,29 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { format } from "date-fns";
 import GenerarTicketButton from "../GenerarTicketButton";
 import { Link } from "react-router-dom";
-import axiosInstance from "../../api/axiosInstance";
 
 function RegistroParqueoList({ registros, loading, fetchRegistros }) {
-  const [tickets, setTickets] = useState({}); // Debe ser un objeto, no un array
-
-  useEffect(() => {
-    const verificarTickets = async () => {
-      try {
-        const response = await axiosInstance.get("/tickets/");
-        const ticketMap = response.data.reduce((acc, ticket) => {
-          acc[ticket.registro_parqueo] = ticket.id;
-          return acc;
-        }, {});
-        setTickets(ticketMap);
-      } catch (error) {
-        console.error("Error al obtener tickets:", error);
-      }
-    };
-
-    verificarTickets();
-  }, [registros]); // Se actualiza si cambian los registros
-
+  // Formatear fecha para mostrarla correctamente
   const formatearFecha = (fecha) =>
     fecha ? format(new Date(fecha), "dd/MM/yyyy, hh:mm a") : "Pendiente";
 
@@ -54,13 +35,13 @@ function RegistroParqueoList({ registros, loading, fetchRegistros }) {
               <td>{registro.tipo_nombre}</td>
               <td>{formatearFecha(registro.fecha_entrada)}</td>
               <td>{formatearFecha(registro.fecha_salida)}</td>
-              <td>{registro.cliente}</td>
+              <td>{registro.cliente || "N/A"}</td>
               <td>{registro.estado}</td>
               <td>${registro.total_cobro}</td>
               <td>
-                {tickets[registro.id] ? (
+                {registro.ticket ? (
                   <Link
-                    to={`/tickets/${tickets[registro.id]}`}
+                    to={`/tickets/${registro.ticket}`}
                     className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded"
                   >
                     Ver Ticket

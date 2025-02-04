@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import RegistroParqueoList from "../components/RegistroParqueo/RegistroParqueoList";
 import RegistroParqueoForm from "../components/RegistroParqueo/RegistroParqueoForm";
 import axiosInstance from "../api/axiosInstance";
+import { format } from "date-fns";
 
 function RegistroParqueoPage() {
   const [registros, setRegistros] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mostrarActivos, setMostrarActivos] = useState(true) //Alternar entre activos e historicos
+  const [mostrarActivos, setMostrarActivos] = useState(true); // Alternar entre activos e históricos
   const [searchQuery, setSearchQuery] = useState("");
 
-
+  // Función para obtener registros de parqueo
   const fetchRegistros = async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get("parqueo/registro-parqueo/");
-      setRegistros(response.data);
+      setRegistros(response.data); // Suponiendo que ya incluye "ticket"
     } catch (error) {
       console.error("Error al obtener los registros:", error);
     } finally {
@@ -26,25 +27,24 @@ function RegistroParqueoPage() {
     fetchRegistros();
   }, []);
 
-
-
-  const registrosFiltrados = (
-    mostrarActivos
-      ? registros.filter((registro) => registro.estado === "activo") // Activos
-      : registros.filter(
-        (registro) => registro.estado === "facturado" || registro.estado === "baja"
-      ) // Históricos
-  ).filter(
-    // Filtro adicional para buscar por placa, fecha o cliente
-    (registro) =>
-      registro.placa.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (registro.fecha_entrada &&
-        new Date(registro.fecha_entrada)
-          .toLocaleDateString("es-ES")
-          .includes(searchQuery)) ||
-      (registro.cliente &&
-        registro.cliente.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Filtrado de registros activos o históricos
+  const registrosFiltrados = registros
+    .filter((registro) =>
+      mostrarActivos
+        ? registro.estado === "activo" // Activos
+        : ["facturado", "baja"].includes(registro.estado) // Históricos
+    )
+    .filter(
+      // Filtro adicional para buscar por placa, fecha o cliente
+      (registro) =>
+        registro.placa.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (registro.fecha_entrada &&
+          format(new Date(registro.fecha_entrada), "dd/MM/yyyy").includes(
+            searchQuery
+          )) ||
+        (registro.cliente &&
+          registro.cliente.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
   return (
     <div>

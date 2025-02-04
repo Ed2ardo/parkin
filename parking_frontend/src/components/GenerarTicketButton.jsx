@@ -2,22 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
-function GenerarTicketButton({ registroId }) {
+function GenerarTicketButton({ registroId, onCobrado }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [ticketId, setTicketId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Consultar si ya existe un ticket asociado al registro
+    // 🔍 Verificar si el registro ya tiene un ticket asociado
     const verificarTicket = async () => {
       try {
-        const response = await axiosInstance.get(`/tickets/?registro_parqueo=${registroId}`);
-        if (response.data.length > 0) {
-          setTicketId(response.data[0].id); // Guardar el ID del ticket encontrado
+        const response = await axiosInstance.get(`/parqueo/registro-parqueo/${registroId}/`);
+
+        if (response.data.ticket) {
+          setTicketId(response.data.ticket); // Ahora el ID correcto del ticket
         }
       } catch (err) {
-        console.error("Error al verificar ticket:", err);
+        console.error("Error al verificar el ticket:", err);
       }
     };
 
@@ -33,27 +34,28 @@ function GenerarTicketButton({ registroId }) {
     setError(null);
 
     try {
-      // Si ya hay un ticket, solo redirigir a su página
       if (ticketId) {
         navigate(`/tickets/${ticketId}`);
         return;
       }
 
-      // 1️⃣ Cambiar el estado del registro a "facturado"
-      await axiosInstance.patch(`parqueo/registro-parqueo/${registroId}/`, {
+      // 🔥 Enviamos el `PATCH` con `generar_ticket: true` y el estado `facturado`
+      const response = await axiosInstance.patch(`/parqueo/registro-parqueo/${registroId}/`, {
         estado: "facturado",
+        generar_ticket: true,
       });
 
-      // 2️⃣ Crear el ticket correspondiente
-      const payload = {
-        registro_parqueo: registroId,
-        informacion_legal: "Resolución DIAN 1234567890 - Facturación Electrónica",
-      };
-      const response = await axiosInstance.post("/tickets/", payload);
+      // ✅ Extraer el ID del ticket generado
+      if (response.data.ticket) {
+        setTicketId(response.data.ticket);
+        navigate(`/tickets/${response.data.ticket}`);
+      } else {
+        throw new Error("El ticket no fue generado correctamente.");
+      }
 
-      // 3️⃣ Guardar el ticketID y redirigir
-      setTicketId(response.data.id);
-      navigate(`/tickets/${response.data.id}`);
+      // 🔄 Actualizar la lista de registros en la página principal
+      if (onCobrado) onCobrado();
+
     } catch (err) {
       console.error("Error en el proceso:", err);
       setError("No se pudo completar la operación. Intenta nuevamente.");
@@ -69,7 +71,7 @@ function GenerarTicketButton({ registroId }) {
         disabled={loading}
         className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
       >
-        {loading ? "Procesando..." : ticketId ? "Generar Ticket" : "Ver Ticket"}
+        {loading ? "Procesando..." : ticketId ? "Ver Ticket" : "Generar Ticket"}
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
