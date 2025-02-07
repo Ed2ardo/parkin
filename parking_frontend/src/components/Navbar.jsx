@@ -5,27 +5,37 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="p-4 bg-gray-800 text-white flex justify-between">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+      <Link className="navbar-brand" to="/">Parqueadero</Link>
+      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span className="navbar-toggler-icon"></span>
+      </button>
 
-
-      {/* Sección de usuario */}
-      <div>
-        {/* Si hay usuario autenticado, mostrar su nombre y el botón de cerrar sesión */}
-        {user ? (
-          <>
-            <span className="mr-4">Bienvenido, {user.username}</span>
-            <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">Salir</button>
-            <div>
-              <Link to="/" className="mr-4">Inicio</Link>
-
-              {/* Mostrar la opción de Configuración solo si el usuario es administrador */}
-              {user?.is_admin && <Link to="/config" className="mr-4">Configuración</Link>}
-            </div>
-          </>
-        ) : (
-          /* Si no hay usuario autenticado, mostrar el enlace para iniciar sesión */
-          <Link to="/login">Iniciar sesión</Link>
-        )}
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav ms-auto">
+          {user ? (
+            <>
+              <li className="nav-item">
+                <span className="nav-link">Bienvenido, {user.username}</span>
+              </li>
+              <li className="nav-item">
+                <button className="btn btn-danger me-2" onClick={logout}>Salir</button>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/">Inicio</Link>
+              </li>
+              {user?.is_admin && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/config">Configuración</Link>
+                </li>
+              )}
+            </>
+          ) : (
+            <li className="nav-item">
+              <Link className="nav-link" to="/login">Iniciar sesión</Link>
+            </li>
+          )}
+        </ul>
       </div>
     </nav>
   );

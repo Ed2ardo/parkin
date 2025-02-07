@@ -25,39 +25,36 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">Iniciar Sesión</h2>
-      <form onSubmit={handleSubmit} className="w-80 p-4 border rounded shadow">
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Usuario</label>
-          <input
-            type="text"
-            name="username"
-            value={credentials.username}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          Iniciar sesión
-        </button>
-      </form>
+    <div className="d-flex flex-column align-items-center justify-content-center vh-100">
+      <div className="card p-4 shadow" style={{ width: "350px" }}>
+        <h2 className="text-center">Iniciar Sesión</h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Usuario</label>
+            <input
+              type="text"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100">Iniciar sesión</button>
+        </form>
+      </div>
     </div>
   );
 };
