@@ -11,6 +11,7 @@ function RegistroParqueoDetallePage() {
   const [registro, setRegistro] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Función para obtener los detalles del registro
   const fetchRegistro = async () => {
     try {
       setLoading(true);
@@ -25,6 +26,7 @@ function RegistroParqueoDetallePage() {
     }
   };
 
+  // Formatear fechas para visualización
   const formatearFecha = (fecha) =>
     fecha ? format(new Date(fecha), "dd/MM/yy, hh:mm a") : "Pendiente";
 
@@ -32,44 +34,77 @@ function RegistroParqueoDetallePage() {
     fetchRegistro();
   }, []);
 
-  if (loading) return <p>Cargando detalles...</p>;
+  if (loading) return <p className="text-center mt-4">Cargando detalles...</p>;
 
   return (
-    <div>
-      <h1>Detalles del Registro</h1>
-      {registro && (
-        <div>
-          <p>Placa: {registro.placa}</p>
-          <p>Tipo: {registro.tipo_nombre}</p>
-          <p>Cliente: {registro.cliente}</p>
-          <p>Fecha de Entrada: {formatearFecha(registro.fecha_entrada)}</p>
-          <p>Fecha Salida: {formatearFecha(registro.fecha_salida)}</p>
-          <p>Estado: {registro.estado}</p>
-          <p>Total cobrado: ${registro.total_cobro}</p>
-          {registro.estado === "activo" && (
-            <GenerarTicketButton
-              registroId={registro.id}
-              onCobrado={fetchRegistro} // Refresca la lista después de cobrar
-            />
-          )}
+    <div className="container mt-5">
+      <div className="card shadow p-4">
+        <h1 className="h4 text-primary mb-3">Detalles del Registro</h1>
 
-          <button
-            onClick={() => navigate(`/registro/${registro.id}/editar`)}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded"
-            disabled={registro.estado === "facturado"} // Deshabilitar si ya está facturado
-          >
-            Editar
-          </button>
+        {registro && (
+          <>
+            <table className="table table-bordered">
+              <tbody>
+                <tr>
+                  <th>Placa</th>
+                  <td>{registro.placa}</td>
+                </tr>
+                <tr>
+                  <th>Tipo</th>
+                  <td>{registro.tipo_nombre}</td>
+                </tr>
+                <tr>
+                  <th>Cliente</th>
+                  <td>{registro.cliente || "No registrado"}</td>
+                </tr>
+                <tr>
+                  <th>Fecha de Entrada</th>
+                  <td>{formatearFecha(registro.fecha_entrada)}</td>
+                </tr>
+                <tr>
+                  <th>Fecha de Salida</th>
+                  <td>{formatearFecha(registro.fecha_salida)}</td>
+                </tr>
+                <tr>
+                  <th>Estado</th>
+                  <td>
+                    <span className={`badge bg-${registro.estado === "activo" ? "success" : "secondary"}`}>
+                      {registro.estado}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Total Cobrado</th>
+                  <td>${registro.total_cobro}</td>
+                </tr>
+              </tbody>
+            </table>
 
-          <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
-          <button
-            onClick={() => navigate("/")}
-            className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
-          >
-            Regresar al Inicio
-          </button>
-        </div>
-      )}
+            {/* Botones de acciones */}
+            <div className="d-flex justify-content-between mt-3">
+              <div>
+                {registro.estado === "activo" && (
+                  <GenerarTicketButton
+                    registroId={registro.id}
+                    onCobrado={fetchRegistro} // Refresca los datos tras generar el ticket
+                  />
+                )}
+                <button
+                  onClick={() => navigate(`/registro/${registro.id}/editar`)}
+                  className="btn btn-warning ms-2"
+                  disabled={registro.estado === "facturado"} // Deshabilitar si ya está facturado
+                >
+                  Editar
+                </button>
+                <EliminarButton registroId={registro.id} onEliminado={() => navigate("/")} />
+              </div>
+              <button onClick={() => navigate("/")} className="btn btn-secondary">
+                Regresar al Inicio
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,19 +9,16 @@ function GenerarTicketButton({ registroId, onCobrado }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 🔍 Verificar si el registro ya tiene un ticket asociado
     const verificarTicket = async () => {
       try {
         const response = await axiosInstance.get(`/parqueo/registro-parqueo/${registroId}/`);
-
         if (response.data.ticket) {
-          setTicketId(response.data.ticket); // Ahora el ID correcto del ticket
+          setTicketId(response.data.ticket);
         }
       } catch (err) {
         console.error("Error al verificar el ticket:", err);
       }
     };
-
     verificarTicket();
   }, [registroId]);
 
@@ -39,13 +36,11 @@ function GenerarTicketButton({ registroId, onCobrado }) {
         return;
       }
 
-      // 🔥 Enviamos el `PATCH` con `generar_ticket: true` y el estado `facturado`
       const response = await axiosInstance.patch(`/parqueo/registro-parqueo/${registroId}/`, {
         estado: "facturado",
         generar_ticket: true,
       });
 
-      // ✅ Extraer el ID del ticket generado
       if (response.data.ticket) {
         setTicketId(response.data.ticket);
         navigate(`/tickets/${response.data.ticket}`);
@@ -53,9 +48,7 @@ function GenerarTicketButton({ registroId, onCobrado }) {
         throw new Error("El ticket no fue generado correctamente.");
       }
 
-      // 🔄 Actualizar la lista de registros en la página principal
       if (onCobrado) onCobrado();
-
     } catch (err) {
       console.error("Error en el proceso:", err);
       setError("No se pudo completar la operación. Intenta nuevamente.");
@@ -65,15 +58,15 @@ function GenerarTicketButton({ registroId, onCobrado }) {
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column align-items-center">
       <button
         onClick={handleGenerarTicket}
         disabled={loading}
-        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+        className={`btn ${ticketId ? "btn-primary" : "btn-success"} w-100`}
       >
         {loading ? "Procesando..." : ticketId ? "Ver Ticket" : "Generar Ticket"}
       </button>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="alert alert-danger mt-2">{error}</p>}
     </div>
   );
 }

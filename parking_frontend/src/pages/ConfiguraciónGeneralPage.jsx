@@ -11,11 +11,12 @@ function ConfiguracionGeneralPage() {
     contacto: "info@parqueadero.com",
   });
 
-  const [tarifas, setTarifas] = useState([]); // Inicializamos como un arreglo vacío
-  const [espacios, setEspacios] = useState([]); // Igual aquí
+  const [tarifas, setTarifas] = useState([]); // Lista de tarifas
+  const [espacios, setEspacios] = useState([]); // Lista de espacios
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Obtener tarifas y espacios desde el backend
   const fetchConfiguracion = async () => {
     try {
       setLoading(true);
@@ -23,8 +24,8 @@ function ConfiguracionGeneralPage() {
         axiosInstance.get("tarifas/"),
         axiosInstance.get("core/espacios-parqueo/"),
       ]);
-      setTarifas(Array.isArray(tarifasRes.data) ? tarifasRes.data : []); // Validar que sea un arreglo
-      setEspacios(Array.isArray(espaciosRes.data) ? espaciosRes.data : []); // Validar que sea un arreglo
+      setTarifas(Array.isArray(tarifasRes.data) ? tarifasRes.data : []);
+      setEspacios(Array.isArray(espaciosRes.data) ? espaciosRes.data : []);
     } catch (error) {
       console.error("Error al cargar la configuración:", error);
       toast.error("Error al cargar la configuración");
@@ -37,9 +38,9 @@ function ConfiguracionGeneralPage() {
     fetchConfiguracion();
   }, []);
 
+  // Guardar tarifas en el backend
   const handleGuardarTarifas = async () => {
     try {
-      // Iterar sobre cada tarifa y actualizarla
       await Promise.all(
         tarifas.map((tarifa) =>
           axiosInstance.put(`tarifas/${tarifa.id}/`, {
@@ -54,6 +55,7 @@ function ConfiguracionGeneralPage() {
     }
   };
 
+  // Guardar espacios en el backend
   const handleGuardarEspacios = async () => {
     try {
       await Promise.all(
@@ -71,93 +73,114 @@ function ConfiguracionGeneralPage() {
     }
   };
 
+  // Guardar datos de la empresa en el localStorage
   const handleGuardarEmpresa = () => {
     localStorage.setItem("config_empresa", JSON.stringify(empresa));
     toast.success("Datos de la empresa guardados localmente");
   };
 
-  if (loading) return <p>Cargando configuración...</p>;
+  if (loading) return <p className="text-center mt-4">Cargando configuración...</p>;
 
   return (
-    <div>
-      <h1>Configuración General</h1>
+    <div className="container mt-5">
+      <h1 className="mb-4 text-primary">Configuración General</h1>
 
       {/* Datos de la empresa */}
-      <section>
-        <h2>Datos de la Empresa</h2>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={empresa.nombre}
-          onChange={(e) => setEmpresa({ ...empresa, nombre: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="NIT"
-          value={empresa.nit}
-          onChange={(e) => setEmpresa({ ...empresa, nit: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Dirección"
-          value={empresa.direccion}
-          onChange={(e) => setEmpresa({ ...empresa, direccion: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Contacto"
-          value={empresa.contacto}
-          onChange={(e) => setEmpresa({ ...empresa, contacto: e.target.value })}
-        />
-        <button onClick={handleGuardarEmpresa}>Guardar Empresa</button>
-      </section>
+      <div className="card shadow p-4 mb-4">
+        <h2 className="h5 mb-3">Datos de la Empresa</h2>
+        <div className="row">
+          {["nombre", "nit", "direccion", "contacto"].map((campo, index) => (
+            <div key={index} className="col-md-6 mb-3">
+              <label className="form-label">{campo.charAt(0).toUpperCase() + campo.slice(1)}</label>
+              <input
+                type="text"
+                className="form-control"
+                value={empresa[campo]}
+                onChange={(e) => setEmpresa({ ...empresa, [campo]: e.target.value })}
+              />
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-success" onClick={handleGuardarEmpresa}>
+          Guardar Empresa
+        </button>
+      </div>
 
       {/* Tarifas */}
-      <section>
-        <h2>Tarifas</h2>
-        {tarifas.map((tarifa, index) => (
-          <div key={index}>
-            <span>{tarifa.tipo_vehiculo_nombre}: </span>
-            <input
-              type="number"
-              step="0.01" // Permite valores decimales
-              value={tarifa.costo_por_minuto !== undefined ? tarifa.costo_por_minuto : ""}
-              onChange={(e) => {
-                const updatedTarifas = [...tarifas];
-                updatedTarifas[index].costo_por_minuto = parseFloat(e.target.value) || 0; // Manejar valores vacíos
-                setTarifas(updatedTarifas);
-              }}
-            />
-          </div>
-        ))}
-        <button onClick={handleGuardarTarifas}>Guardar Tarifas</button>
-      </section>
+      <div className="card shadow p-4 mb-4">
+        <h2 className="h5 mb-3">Tarifas</h2>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tipo de Vehículo</th>
+              <th>Costo por Minuto</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tarifas.map((tarifa, index) => (
+              <tr key={index}>
+                <td>{tarifa.tipo_vehiculo_nombre}</td>
+                <td>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control"
+                    value={tarifa.costo_por_minuto || ""}
+                    onChange={(e) => {
+                      const updatedTarifas = [...tarifas];
+                      updatedTarifas[index].costo_por_minuto = parseFloat(e.target.value) || 0;
+                      setTarifas(updatedTarifas);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="btn btn-primary" onClick={handleGuardarTarifas}>
+          Guardar Tarifas
+        </button>
+      </div>
 
       {/* Espacios Disponibles */}
-      <section>
-        <h2>Espacios Disponibles</h2>
-        {espacios.map((espacio, index) => (
-          <div key={index}>
-            <span>{espacio.tipo_espacio_nombre}: </span>
-            <input
-              type="number"
-              value={espacio.total_espacios || ""}
-              onChange={(e) => {
-                const updatedEspacios = [...espacios];
-                updatedEspacios[index].total_espacios = parseInt(e.target.value, 10);
-                setEspacios(updatedEspacios);
-              }}
-            />
-          </div>
-        ))}
-        <button onClick={handleGuardarEspacios}>Guardar Espacios</button>
-        <button
-          onClick={() => navigate("/")}
-          className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
-        >
-          Regresar al Inicio
+      <div className="card shadow p-4 mb-4">
+        <h2 className="h5 mb-3">Espacios Disponibles</h2>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tipo de Espacio</th>
+              <th>Total de Espacios</th>
+            </tr>
+          </thead>
+          <tbody>
+            {espacios.map((espacio, index) => (
+              <tr key={index}>
+                <td>{espacio.tipo_espacio_nombre}</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={espacio.total_espacios || ""}
+                    onChange={(e) => {
+                      const updatedEspacios = [...espacios];
+                      updatedEspacios[index].total_espacios = parseInt(e.target.value, 10) || 0;
+                      setEspacios(updatedEspacios);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="btn btn-primary" onClick={handleGuardarEspacios}>
+          Guardar Espacios
         </button>
-      </section>
+      </div>
+
+      {/* Botón de regreso */}
+      <button className="btn btn-secondary" onClick={() => navigate("/")}>
+        Regresar al Inicio
+      </button>
     </div>
   );
 }
