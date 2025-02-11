@@ -31,7 +31,7 @@ class RegistroParqueo(models.Model):
     )
 
     tipo = models.ForeignKey(
-        'core.TipoVehiculo', on_delete=models.CASCADE, verbose_name="Tipo de Vehículo"
+        'core.TipoVehiculo', on_delete=models.CASCADE, verbose_name="Tipo de Vehículo", blank=True, null=True
     )
     usuario_registra = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuario que Registró"
