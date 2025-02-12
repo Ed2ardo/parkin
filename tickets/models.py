@@ -34,6 +34,7 @@ class Ticket(models.Model):
         choices=[
             ("activo", "Activo"),
             ("cancelado", "Cancelado"),
+            ("facturado", "Facturado")
         ],
         default="activo",
         verbose_name="Estado del Ticket"
@@ -55,6 +56,8 @@ class Ticket(models.Model):
             registro = RegistroParqueo.objects.filter(ticket=self).first()
             if registro:
                 self.total = registro.total_cobro
+                self.cliente = registro.cliente
+                self.estado = registro.estado
 
         super().save(*args, **kwargs)
 

@@ -3,17 +3,24 @@ from rest_framework.response import Response
 from .models import RegistroParqueo
 from .serializers import RegistroParqueoSerializers
 from django.utils.timezone import now
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.decorators import action
 from tickets.models import Ticket
 from django.db import transaction
-from rest_framework.exceptions import APIException
+# from rest_framework.exceptions import APIException
+
+
+class IsAdminOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in ["GET", "POST"]:
+            return request.user.is_authenticated
+        return request.user.is_authenticated and request.user.is_superuser
 
 
 class RegistroParqueoViewSet(viewsets.ModelViewSet):
     queryset = RegistroParqueo.objects.all()
     serializer_class = RegistroParqueoSerializers
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]
 
     def destroy(self, request, *args, **kwargs):
         if not request.user.is_superuser:
@@ -51,8 +58,12 @@ class RegistroParqueoViewSet(viewsets.ModelViewSet):
                     instance.ticket = ticket
                     instance.save()
 
-                serializer = self.get_serializer(instance)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
+            # 🚨 Se asegura de validar el serializer
+            serializer.is_valid(raise_exception=True)
+            serializer.save()  # Guardamos los cambio
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
             # Manejo de excepciones más genérico

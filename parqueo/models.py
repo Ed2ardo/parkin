@@ -16,7 +16,7 @@ class RegistroParqueo(models.Model):
         # null=True,
         # blank=True,
         validators=[RegexValidator(
-            regex='^[A-Z0-9-]{6,10}$',
+            regex='^[A-Z0-9]{6,10}$',
             message='Formato de placa inválido (solo mayúsculas, números y guiones).'
         )],
         verbose_name="Placa del Vehículo"

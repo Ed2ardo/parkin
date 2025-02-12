@@ -55,6 +55,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             "registro_parqueo": registro_parqueo.id,
             "total": registro_parqueo.total_cobro,
             "cliente": registro_parqueo.cliente,
+            "estado": registro_parqueo.estado
         }
         serializer = self.get_serializer(data=ticket_data)
         serializer.is_valid(raise_exception=True)
