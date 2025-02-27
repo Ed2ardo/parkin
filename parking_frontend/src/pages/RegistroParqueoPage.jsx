@@ -27,12 +27,11 @@ function RegistroParqueoPage() {
     fetchRegistros();
   }, []);
 
-  const registrosFiltrados = registros
-    .filter((registro) =>
-      mostrarActivos
-        ? registro.estado === "activo"
-        : ["facturado", "baja"].includes(registro.estado)
-    )
+  const registrosFiltrados = registros.filter((registro) =>
+    mostrarActivos
+      ? registro.estado === "activo"
+      : ["facturado", "baja"].includes(registro.estado)
+  )
     .filter(
       (registro) =>
         registro.placa.toLowerCase().includes(searchQuery.toLowerCase()) ||

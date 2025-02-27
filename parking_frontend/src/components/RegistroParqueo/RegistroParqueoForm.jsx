@@ -15,7 +15,8 @@ function RegistroParqueoForm({ fetchRegistros }) {
     const fetchTiposVehiculo = async () => {
       try {
         const response = await axiosInstance.get("core/tipos-vehiculos/");
-        setTiposVehiculo(response.data);
+        console.log("Tipos de Vehículo recibidos:", response.data);
+        setTiposVehiculo(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Error al obtener tipos de vehículo:", error);
         setError("Error al cargar los tipos de vehículos");
@@ -49,8 +50,9 @@ function RegistroParqueoForm({ fetchRegistros }) {
       {error && <p className="alert alert-danger">{error}</p>}
       <form onSubmit={handleSubmit} className="border p-4 rounded shadow bg-light">
         <div className="mb-3">
-          <label className="form-label">Placa:</label>
+          <label htmlFor="placa" className="form-label">Placa:</label>
           <input
+            id="placa"
             type="text"
             name="placa"
             value={formData.placa}
@@ -61,8 +63,9 @@ function RegistroParqueoForm({ fetchRegistros }) {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Tipo de Vehículo:</label>
+          <label htmlFor="tipo de vehículo" className="form-label">Tipo de Vehículo:</label>
           <select
+            id="tipo de vehículo"
             name="tipo"
             value={formData.tipo}
             onChange={handleChange}
@@ -79,8 +82,9 @@ function RegistroParqueoForm({ fetchRegistros }) {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Cliente:</label>
+          <label htmlFor="cliente" className="form-label">Cliente:</label>
           <input
+            id="cliente"
             type="text"
             name="cliente"
             value={formData.cliente}

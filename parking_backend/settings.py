@@ -137,10 +137,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://815f-186-155-15-36.ngrok-free.app",
+    "https://a7db-186-155-15-36.ngrok-free.app",
+    "https://0d18-186-155-15-36.ngrok-free.app",
+    "http://127.0.0.1:8000",
 ]
 
 REST_FRAMEWORK = {
