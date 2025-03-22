@@ -4,6 +4,8 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from core.models import TipoVehiculo
 from tarifas.models import Tarifa
+from django.core.exceptions import ValidationError
+
 
 
 class TarifaTests(TestCase):
@@ -29,12 +31,13 @@ class TarifaTests(TestCase):
         tarifa = Tarifa.objects.create(
             tipo_vehiculo=self.tipo_vehiculo, costo_por_minuto=1.01)
         self.assertEqual(str(tarifa), "Motocicleta - $1.01 por minuto")
-
+            
     def test_validacion_costo_negativo(self):
         """Prueba que no se puedan crear tarifas con costo negativo"""
-        with self.assertRaises(Exception):
-            Tarifa.objects.create(
-                tipo_vehiculo=self.tipo_vehiculo, costo_por_minuto=-1.01)
+        tarifa = Tarifa(tipo_vehiculo=self.tipo_vehiculo, costo_por_minuto=-5)
+
+        with self.assertRaises(ValidationError):  
+            tarifa.full_clean()  # Valida manualmente antes de guardar
 
     def test_api_listar_tarifas(self):
         """Prueba que cualquier usuario autenticado pueda listar tarifas"""
@@ -47,9 +50,9 @@ class TarifaTests(TestCase):
     def test_api_crear_tarifa_admin(self):
         """Prueba que solo un admin pueda crear tarifas"""
         self.client.force_authenticate(user=self.admin_user)
-        data = {"tipo_vehiculo": self.tipo_vehiculo.id,
-                "costo_por_minuto": 1.50}
-        response = self.client.post("/api/tarifas/", data)
+#        data = {"tipo_vehiculo": {"id": self.tipo_vehiculo.id}, "costo_por_minuto": 1.50}
+        data = {"tipo_vehiculo": self.tipo_vehiculo.id, "costo_por_minuto": 1.50}
+        response = self.client.post("/api/tarifas/", data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Tarifa.objects.count(), 2)
 

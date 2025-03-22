@@ -6,23 +6,32 @@ import { BrowserRouter } from "react-router-dom";
 
 vi.stubGlobal("confirm", vi.fn(() => true));
 
-// Mock de axiosInstance
+// Mock de axiosInstance con un control de llamadas
+let getCallCount = 0;
+
 vi.mock("../api/axiosInstance", () => ({
   default: {
-    get: vi.fn(() =>
-      Promise.resolve({
-        data: { ticket: { id: 1, url: "/ticket/1" } }, // Simulamos una respuesta exitosa
-      })
-    ),
-    patch: vi.fn(() =>
-      Promise.resolve({
-        data: { estado: "facturado", generar_ticket: true },
-      })
-    ),
+    get: vi.fn(() => {
+      getCallCount++;
+      console.log(`Interceptando GET (llamada #${getCallCount})`);
+      return Promise.resolve({
+        data: getCallCount === 1 ? {} : { ticket: { id: 1, url: "/ticket/1" } },
+      });
+    }),
+    patch: vi.fn(() => {
+      console.log("Interceptando PATCH");
+      return Promise.resolve({
+        data: { ticket: { id: 1, url: "/ticket/1" } },
+      });
+    }),
   },
 }));
 
 describe("GenerarTicketButton", () => {
+  beforeEach(() => {
+    getCallCount = 0; // Reiniciar el contador antes de cada prueba
+  });
+
   test("Muestra 'Generar Ticket' cuando no hay ticket", async () => {
     render(
       <BrowserRouter>
@@ -30,9 +39,11 @@ describe("GenerarTicketButton", () => {
       </BrowserRouter>
     );
 
-    expect(
-      screen.getByRole("button", { name: /Generar Ticket/i })
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /Generar Ticket/i })
+      ).toBeInTheDocument();
+    });
   });
 
   test("Genera un ticket al hacer clic en el botón", async () => {
@@ -42,7 +53,9 @@ describe("GenerarTicketButton", () => {
       </BrowserRouter>
     );
 
-    const button = screen.getByRole("button", { name: /Generar Ticket/i });
+    // Esperar a que el botón "Generar Ticket" se muestre
+    const button = await screen.findByRole("button", { name: /Generar Ticket/i });
+
     fireEvent.click(button);
 
     await waitFor(() => {
@@ -55,15 +68,11 @@ describe("GenerarTicketButton", () => {
       );
     });
 
-    // Validamos que el botón "Ver Ticket" aparezca
+    // Esperar a que el botón cambie a "Ver Ticket"
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: /Ver Ticket/i }) // Quitamos las comillas de más
+        screen.getByRole("button", { name: /Ver Ticket/i })
       ).toBeInTheDocument();
     });
   });
 });
-
-
-
-

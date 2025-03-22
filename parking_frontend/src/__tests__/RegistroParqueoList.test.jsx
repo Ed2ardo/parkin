@@ -4,6 +4,28 @@ import RegistroParqueoList from "../components/RegistroParqueo/RegistroParqueoLi
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest"; // Si usas Vitest en lugar de Jest
 
+vi.mock("../api/axiosInstance", () => ({
+  default: {
+    get: vi.fn(() =>
+      Promise.resolve({
+        data: [
+          {
+            id: 1,
+            placa: "ABC123",
+            tipo_nombre: "Motocicleta",
+            fecha_entrada: "2025-02-27T14:00:00Z",
+            fecha_salida: null,
+            cliente: "Juan Pérez",
+            estado: "activo",
+            total_cobro: "5000",
+            ticket: null,
+          },
+        ],
+      })
+    ),
+  },
+}));
+
 describe("RegistroParqueoList", () => {
   test("muestra el mensaje de carga cuando loading es true", () => {
     render(
